@@ -47,6 +47,7 @@ if __name__ == '__main__':
 	right_img = imread_from_url("https://raw.githubusercontent.com/megvii-research/CREStereo/master/img/test/right.png")
 
 	in_h, in_w = left_img.shape[:2]
+	print("Input shape: ", in_h, in_w)
 
 	# Resize image in case the GPU memory overflows
 	eval_h, eval_w = (in_h,in_w)
