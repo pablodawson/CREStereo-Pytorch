@@ -232,12 +232,15 @@ class SpringStereoDataset(data.Dataset):
     split: train/test split
     subsample_groundtruth: If true, return ground truth such that it has the same dimensions as the images (1920x1080px); if false return full 4K resolution
     """
-    def __init__(self, root, split='train', subsample_groundtruth=True):
+    def __init__(self, root, split='train', subsample_groundtruth=True, width=960, height=540):
         super(SpringStereoDataset, self).__init__()
 
+        self.width = width
+        self.height = height
+
         self.augmentor = Augmentor(
-            image_height=540,
-            image_width=960,
+            image_height=height,
+            image_width=width,
             max_disp=256,
             scale_min=0.6,
             scale_max=1.0,
@@ -283,13 +286,15 @@ class SpringStereoDataset(data.Dataset):
         
         disp = disp.astype(np.float32)
 
-        left_img = np.asarray(Image.open(img1_path))
-        right_img = np.asarray(Image.open(img2_path))
+        left_img = np.asarray(Image.open(img1_path).resize((self.width, self.height)))
+        right_img = np.asarray(Image.open(img2_path).resize((self.width, self.height)))
 
         left_img, right_img, disp, frame_data = self.augmentor(left_img, right_img, disp)
 
         left_img = left_img.transpose(2, 0, 1).astype("uint8")
         right_img = right_img.transpose(2, 0, 1).astype("uint8")
+
+        
 
         if self.split == "test":
             return {
